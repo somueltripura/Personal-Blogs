@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Somuel's World — Thoughts, Code & Quiet Mornings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwindcss.config = {
+      theme: {
+        extend: {
+          colors: {
+            ivory: '#FAF7F2',
+            cream: '#F5F0EB',
+            beige: '#E8DFD4',
+            sage: '#D4CFC6',
+            forest: '#1A3A2A',
+            forestLight: '#2D5A3F',
+            forestMuted: '#3D6B50',
+            charcoal: '#2D2D2D',
+            softBlack: '#1A1A1A',
+            gold: '#B8963E',
+            goldLight: '#C4A265',
+            goldMuted: '#D4BA82',
+            warmGray: '#8A8279',
+            warmLight: '#A69F96',
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+    body {
+      background-color: #FAF7F2;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+    }
+
+    ::selection { background-color: rgba(184, 150, 62, 0.15); color: #1A3A2A; }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-in-delay-1 { transition-delay: 0.1s; }
+    .fade-in-delay-2 { transition-delay: 0.2s; }
+    .fade-in-delay-3 { transition-delay: 0.3s; }
+    .fade-in-delay-4 { transition-delay: 0.4s; }
+    .fade-in-delay-5 { transition-delay: 0.5s; }
+
+    .line-expand {
+      width: 0;
+      transition: width 1.2s ease-out;
+    }
+    .line-expand.visible { width: 80px; }
+
+    .article-card {
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    .article-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px -15px rgba(26, 58, 42, 0.1);
+    }
+
+    .nav-link {
+      position: relative;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: #B8963E;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after { width: 100%; }
+
+    .category-card {
+      transition: all 0.4s ease;
+    }
+    .category-card:hover {
+      background-color: #1A3A2A;
+      color: #FAF7F2;
+    }
+    .category-card:hover .cat-icon { color: #D4BA82; }
+    .category-card:hover .cat-count { color: #D4BA82; }
+    .category-card:hover .cat-arrow { transform: translateX(4px); color: #D4BA82; }
+
+    .cat-arrow { transition: transform 0.3s ease, color 0.3s ease; }
+
+    .gold-line {
+      height: 1px;
+      background: linear-gradient(to right, transparent, #B8963E, transparent);
+    }
+
+    .forest-line {
+      height: 1px;
+      background: linear-gradient(to right, transparent, #1A3A2A, transparent);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 1rem 1.5rem;
+      background: #1A3A2A;
+      color: #FAF7F2;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      transform: translateY(120%);
+      opacity: 0;
+      transition: all 0.4s ease;
+      z-index: 100;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .mobile-menu.open { max-height: 400px; }
+
+    input::placeholder { color: #A69F96; }
+
+    .hero-image-overlay {
+      background: linear-gradient(135deg, rgba(26,58,42,0.08) 0%, rgba(184,150,62,0.06) 100%);
+    }
+
+    @media (max-width: 768px) {
+      .hero-grid { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</head>
+<body class="font-sans text-charcoal leading-relaxed">
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Navigation -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" style="background: rgba(250,247,242,0.9); backdrop-filter: blur(12px);">
+    <div class="max-w-6xl mx-auto px-6 md:px-12">
+      <div class="flex items-center justify-between h-16 md:h-20">
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-2">
+          <span class="font-serif text-xl md:text-2xl font-semibold text-forest tracking-tight">Somuel's</span>
+          <span class="font-serif text-xl md:text-2xl font-light text-warmGray italic">World</span>
+        </a>
+
+        <!-- Desktop Nav -->
+        <div class="hidden md:flex items-center gap-8">
+          <a href="#writing" class="nav-link text-sm font-medium text-charcoal hover:text-forest transition-colors">Writing</a>
+          <a href="#about" class="nav-link text-sm font-medium text-charcoal hover:text-forest transition-colors">About</a>
+          <a href="#categories" class="nav-link text-sm font-medium text-charcoal hover:text-forest transition-colors">Topics</a>
+          <a href="#work" class="nav-link text-sm font-medium text-charcoal hover:text-forest transition-colors">Work</a>
+          <a href="#contact" class="nav-link text-sm font-medium text-charcoal hover:text-forest transition-colors">Contact</a>
+        </div>
+
+        <!-- Mobile Toggle -->
+        <button id="menuBtn" class="md:hidden p-2 text-charcoal" aria-label="Menu">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div id="mobileMenu" class="mobile-menu md:hidden">
+        <div class="pb-6 pt-2 flex flex-col gap-4 border-t border-beige">
+          <a href="#writing" class="text-sm font-medium text-charcoal hover:text-forest transition-colors mobile-link">Writing</a>
+          <a href="#about" class="text-sm font-medium text-charcoal hover:text-forest transition-colors mobile-link">About</a>
+          <a href="#categories" class="text-sm font-medium text-charcoal hover:text-forest transition-colors mobile-link">Topics</a>
+          <a href="#work" class="text-sm font-medium text-charcoal hover:text-forest transition-colors mobile-link">Work</a>
+          <a href="#contact" class="text-sm font-medium text-charcoal hover:text-forest transition-colors mobile-link">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="gold-line"></div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="min-h-screen flex items-center pt-20">
+    <div class="max-w-6xl mx-auto px-6 md:px-12 w-full py-16 md:py-24">
+      <div class="hero-grid grid gap-12 md:gap-16 items-center" style="grid-template-columns: 1fr 1fr;">
+        <!-- Text -->
+        <div class="order-2 md:order-1">
+          <div class="fade-in">
+            <p class="text-gold font-medium text-xs tracking-[0.2em] uppercase mb-6">Writer · Developer · Thinker</p>
+          </div>
+          <h1 class="fade-in fade-in-delay-1 font-serif text-4xl md:text-5xl lg:text-6xl font-semibold text-forest leading-[1.15] mb-6">
+            Thoughts woven<br>
+            <span class="italic font-normal text-forestLight">into quiet words</span>
+          </h1>
+          <div class="fade-in fade-in-delay-2">
+            <p class="text-warmGray text-base md:text-lg leading-relaxed max-w-md mb-4">
+              I write about code, language, and the quiet moments in between — exploring what it means to build, learn, and live with intention.
+            </p>
+          </div>
+          <div class="fade-in fade-in-delay-3">
+            <div class="line-expand h-[1px] bg-gold mb-8"></div>
+          </div>
+          <div class="fade-in fade-in-delay-4 flex flex-wrap gap-4">
+            <a href="#writing" class="inline-flex items-center gap-2 px-7 py-3.5 bg-forest text-ivory text-sm font-medium rounded-sm hover:bg-forestLight transition-colors duration-300">
+              Read the Journal
+              <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
+            </a>
+            <a href="#about" class="inline-flex items-center gap-2 px-7 py-3.5 border border-charcoal/20 text-charcoal text-sm font-medium rounded-sm hover:border-forest hover:text-forest transition-colors duration-300">
+              My Story
+            </a>
+          </div>
+        </div>
+        <!-- Image -->
+        <div class="order-1 md:order-2 fade-in fade-in-delay-2">
+          <div class="relative">
+            <div class="aspect-[3/4] rounded-sm overflow-hidden">
+              <img style="width: 100%; height: 100%; object-fit: cover;" src="https://scontent.fjsr13-1.fna.fbcdn.net/v/t39.30808-6/484136271_660048173199547_3366392349042776126_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=53a332&_nc_eui2=AeFoGLz7008owlFkSDEQrJqoECsc32uj5A0QKxzfa6PkDWlYNdB8PeTjBlLkrpwT7tovZo-br30J1IHLItPYSce-&_nc_ohc=hfgKrzMoaVEQ7kNvwG6W-qq&_nc_oc=Ado6FG-9Vy9usGlL7-hiI_EKCuy1lpHhyqGJiEZKYk8SNWg1F0WPkl6FztATVOxpci8&_nc_zt=23&_nc_ht=scontent.fjsr13-1.fna&_nc_gid=-ing7zW19c15ypUdTdBcDA&_nc_ss=7b2a8&oh=00_Af39mW7pxKu0YkKlaUZETEaTq5EclvPcRSALpuu7wcP4-g&oe=69F3DB3F" alt="Workspace with books and coffee" class="w-full h-full object-cover" style="filter: saturate(0.85) contrast(1.02) brightness(1.03);">
+              <div class="hero-image-overlay absolute inset-0"></div>
+            </div>
+            <!-- Floating quote card -->
+            <div class="absolute -bottom-6 -left-6 md:-left-10 bg-white/95 backdrop-blur-sm p-5 md:p-6 max-w-[220px] shadow-lg shadow-forest/5 rounded-sm">
+              <p class="font-serif italic text-forest text-sm leading-relaxed">"Design should feel like reading a quiet book in a peaceful afternoon."</p>
+              <div class="mt-3 w-8 h-[1px] bg-gold"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Posts -->
+  <section class="py-20 md:py-32">
+    <div class="max-w-6xl mx-auto px-6 md:px-12">
+      <div class="fade-in flex items-end justify-between mb-12 md:mb-16">
+        <div>
+          <p class="text-gold font-medium text-xs tracking-[0.2em] uppercase mb-3">Curated</p>
+          <h2 class="font-serif text-3xl md:text-4xl font-semibold text-forest">Featured Writing</h2>
+        </div>
+        <a href="#writing" class="hidden md:inline-flex items-center gap-1.5 text-sm font-medium text-warmGray hover:text-forest transition-colors">
+          View all <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 md:gap-8 mb-8">
+        <!-- Featured 1 - Large -->
+        <div class="fade-in article-card group cursor-pointer bg-white rounded-sm overflow-hidden border border-beige/60">
+          <div class="aspect-[16/10] overflow-hidden">
+            <img src="https://media.licdn.com/dms/image/v2/D4D12AQH11fUgGdGRvA/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1732025750897?e=2147483647&v=beta&t=w2bwu5iyloRfeBkZx9chW-1fwnS9ZAqVBCsW08-JhbY" alt="Morning coding session" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="filter: saturate(0.8) brightness(1.02);">
+          </div>
+          <div class="p-6 md:p-8">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="text-xs font-medium text-gold tracking-wider uppercase">Programming</span>
+              <span class="text-sage">·</span>
+              <span class="text-xs text-warmLight">8 min read</span>
+            </div>
+            <h3 class="font-serif text-xl md:text-2xl font-semibold text-forest mb-3 group-hover:text-forestLight transition-colors leading-snug">The Quiet Art of Writing Clean Code That Outlives You</h3>
+            <p class="text-warmGray text-sm leading-relaxed mb-4">Why the best code reads like prose, and what we lose when we optimize only for machines.</p>
+            <div class="flex items-center gap-2 text-sm text-gold font-medium">
+              Read more <i data-lucide="arrow-right" class="w-3.5 h-3.5 transition-transform group-hover:translate-x-1"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="flex flex-col gap-6 md:gap-8">
+          <!-- Featured 2 -->
+          <div class="fade-in fade-in-delay-1 article-card group cursor-pointer bg-white rounded-sm overflow-hidden border border-beige/60 flex flex-col sm:flex-row">
+            <div class="sm:w-48 md:w-56 flex-shrink-0 aspect-[4/3] sm:aspect-auto overflow-hidden">
+              <img src="https://canguroenglish.com/wp-content/uploads/2024/09/this-book-will-not-make-you-fluent-mockup-1024x958.png" alt="Language learning books" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="filter: saturate(0.8) brightness(1.02);">
+            </div>
+            <div class="p-5 md:p-6 flex flex-col justify-center">
+              <div class="flex items-center gap-3 mb-3">
+                <span class="text-xs font-medium text-gold tracking-wider uppercase">Learning</span>
+                <span class="text-sage">·</span>
+                <span class="text-xs text-warmLight">5 min</span>
+              </div>
+              <h3 class="font-serif text-lg font-semibold text-forest mb-2 group-hover:text-forestLight transition-colors leading-snug">Learning English Through Literature, Not Textbooks</h3>
+              <p class="text-warmGray text-sm leading-relaxed hidden sm:block">How reading Hemingway taught me more grammar than any course ever could.</p>
+            </div>
+          </div>
+
+          <!-- Featured 3 -->
+          <div class="fade-in fade-in-delay-2 article-card group cursor-pointer bg-white rounded-sm overflow-hidden border border-beige/60 flex flex-col sm:flex-row">
+            <div class="sm:w-48 md:w-56 flex-shrink-0 aspect-[4/3] sm:aspect-auto overflow-hidden">
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjDUAEfBdqRd18kcr8SR0y3Vu4_67qeE_U6Q&s" alt="Quiet contemplative moment" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="filter: saturate(0.8) brightness(1.02);">
+            </div>
+            <div class="p-5 md:p-6 flex flex-col justify-center">
+              <div class="flex items-center gap-3 mb-3">
+                <span class="text-xs font-medium text-gold tracking-wider uppercase">Thoughts</span>
+                <span class="text-sage">·</span>
+                <span class="text-xs text-warmLight">4 min</span>
+              </div>
+              <h3 class="font-serif text-lg font-semibold text-forest mb-2 group-hover:text-forestLight transition-colors leading-snug">On Solitude and the Courage to Sit With Yourself</h3>
+              <p class="text-warmGray text-sm leading-relaxed hidden sm:block">In a world that demands noise, choosing silence is the most rebellious act.</p>
+            </div>
+          </div>
+
+          <!-- Featured 4 -->
+          <div class="fade-in fade-in-delay-3 article-card group cursor-pointer bg-white rounded-sm overflow-hidden border border-beige/60 flex flex-col sm:flex-row">
+            <div class="sm:w-48 md:w-56 flex-shrink-0 aspect-[4/3] sm:aspect-auto overflow-hidden">
+              <img src="https://picsum.photos/seed/growth-plant/400/300.jpg" alt="Plant growing" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="filter: saturate(0.8) brightness(1.02);">
+            </div>
+            <div class="p-5 md:p-6 flex flex-col justify-center">
+              <div class="flex items-center gap-3 mb-3">
+                <span class="text-xs font-medium text-gold tracking-wider uppercase">Growth</span>
+                <span class="text-sage">·</span>
+                <span class="text-xs text-warmLight">6 min</span>
+              </div>
+              <h3 class="font-serif text-lg font-semibold text-forest mb-2 group-hover:text-forestLight transition-colors leading-snug">Small Habits, Invisible Growth: A Year in Review</h3>
+              <p class="text-warmGray text-sm leading-relaxed hidden sm:block">The compound effect of showing up when nobody is watching.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="md:hidden fade-in mt-4 text-center">
+        <a href="#writing" class="inline-flex items-center gap-1.5 text-sm font-medium text-warmGray hover:text-forest transition-colors">
+          View all articles <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-6 md:px-12"><div class="forest-line opacity-20"></div></div>
+
+  <!-- About Me -->
+  <section id="about" class="py-20 md:py-32">
+    <div class="max-w-6xl mx-auto px-6 md:px-12">
+      <div class="grid md:grid-cols-5 gap-12 md:gap-16 items-start">
+        <!-- Image Column -->
+        <div class="md:col-span-2 fade-in">
+          <div class="aspect-[3/4] rounded-sm overflow-hidden">
+            <img src="https://scontent.fjsr13-1.fna.fbcdn.net/v/t39.30808-6/481166302_649964147541283_6691165153254594490_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=53a332&_nc_eui2=AeGSHIio5N3fU7b6vxo0O03KiGt6CfLqB8mIa3oJ8uoHyW_7hCVWBFvo6kGxfm4JfJkTMB1gSmhe6DYHTzm7b-R3&_nc_ohc=2T_FnpjazA0Q7kNvwEybKyw&_nc_oc=AdomPDJZptclAV_17hiSG_UeYU9MN4LHOAhDOZfqIep_XjYoNsbzQwgG2cbco-tTIbU&_nc_zt=23&_nc_ht=scontent.fjsr13-1.fna&_nc_gid=0ok2vNyADJ2amBYwZnkgng&_nc_ss=7b2a8&oh=00_Af0avr35L62aSKGWtx1M7jUX611x7zCS2vnqZHmFzzhhCg&oe=69F3FFE6" alt="Portrait" class="w-full h-full object-cover" style="filter: saturate(0.82) contrast(1.01) brightness(1.02);">
+          </div>
+          <div class="mt-6 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-forest flex items-center justify-center">
+              <i data-lucide="map-pin" class="w-4 h-4 text-ivory"></i>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-forest">Based in India</p>
+              <p class="text-xs text-warmGray">Writing from everywhere</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Text Column -->
+        <div class="md:col-span-3">
+          <div class="fade-in">
+            <p class="text-gold font-medium text-xs tracking-[0.2em] uppercase mb-3">About</p>
+            <h2 class="font-serif text-3xl md:text-4xl font-semibold text-forest mb-8">A brief introduction</h2>
+          </div>
+
+          <div class="space-y-5">
+            <p class="fade-in fade-in-delay-1 text-charcoal leading-[1.85]">
+              I'm <span class="font-medium text-forest">Somuel Tripura</span> — a developer who discovered that writing is just as important as coding. I spend my mornings with coffee and a text editor, my afternoons building things for the web, and my evenings reading books that make me think differently.
+            </p>
+            <p class="fade-in fade-in-delay-2 text-warmGray leading-[1.85]">
+              This journal is where I explore the intersection of technology, language, and personal growth. I believe that learning to write clearly is learning to think clearly — and I'm still learning both.
+            </p>
+            <p class="fade-in fade-in-delay-3 text-warmGray leading-[1.85]">
+              I write about building software with care, learning English as a second language through stories instead of rules, and the quiet philosophy of living with intention in a noisy world.
+            </p>
+          </div>
+
+          <div class="fade-in fade-in-delay-4 mt-10 grid grid-cols-3 gap-6 pt-8 border-t border-beige">
+            <div>
+              <p class="font-serif text-2xl md:text-3xl font-semibold text-forest">47</p>
+              <p class="text-xs text-warmGray mt-1">Articles Written</p>
+            </div>
+            <div>
+              <p class="font-serif text-2xl md:text-3xl font-semibold text-forest">3</p>
+              <p class="text-xs text-warmGray mt-1">Years of Writing</p>
+            </div>
+            <div>
+              <p class="font-serif text-2xl md:text-3xl font-semibold text-forest">12</p>
+              <p class="text-xs text-warmGray mt-1">Projects Built</p>
+            </div>
+          </div>
+
+          <div class="fade-in fade-in-delay-5 mt-8 flex flex-wrap gap-3">
+            <span class="px-4 py-2 text-xs font-medium tracking-wider uppercase bg-cream border border-beige rounded-sm text-warmGray">Self-taught Developer</span>
+            <span class="px-4 py-2 text-xs font-medium tracking-wider uppercase bg-cream border border-beige rounded-sm text-warmGray">English Learner</span>
+            <span class="px-4 py-2 text-xs font-medium tracking-wider uppercase bg-cream border border-beige rounded-sm text-warmGray">Slow Living</span>
+            <span class="px-4 py-2 text-xs font-medium tracking-wider uppercase bg-cream border border-beige rounded-sm text-warmGray">Open Source</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-6 md:px-12"><div class="gold-line opacity-40"></div></div>
+
+  <!-- Blog Categories -->
+  <section id="categories" class="py-20 md:py-32">
+    <div class="max-w-6xl mx-auto px-6 md:px-12">
+      <div class="fade-in text-center mb-14 md:mb-18">
+        <p class="text-gold font-medium text-xs tracking-[0.2em] uppercase mb-3">Explore</p>
+        <h2 class="font-serif text-3xl md:text-4xl font-semibold text-forest mb-4">What I Write About</h2>
+        <p class="text-warmGray max-w-lg mx-auto">Four pillars that shape my thinking — each a doorway into a different part of the journey.</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4 md:gap-5">
+        <!-- Category 1 -->
+        <div class="fade-in category-card cursor-pointer bg-white border border-beige/60 rounded-sm p-7 md:p-8">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-12 h-12 rounded-sm bg-cream flex items-center justify-center">
+              <i data-lucide="code-2" class="w-5 h-5 cat-icon text-forest transition-colors"></i>
+            </div>
+            <i data-lucide="arrow-up-right" class="w-5 h-5 cat-arrow text-sage transition-all"></i>
+          </div>
+          <h3 class="font-serif text-xl font-semibold text-forest mb-2">Programming</h3>
+          <p class="text-warmGray text-sm leading-relaxed mb-4">Thoughts on writing code that's clean, maintainable, and built with care. From architecture to debugging philosophy.</p>
+          <span class="cat-count text-xs font-medium text-warmLight transition-colors">14 articles</span>
+        </div>
+
+        <!-- Category 2 -->
+        <div class="fade-in fade-in-delay-1 category-card cursor-pointer bg-white border border-beige/60 rounded-sm p-7 md:p-8">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-12 h-12 rounded-sm bg-cream flex items-center justify-center">
+              <i data-lucide="book-open" class="w-5 h-5 cat-icon text-forest transition-colors"></i>
+            </div>
+            <i data-lucide="arrow-up-right" class="w-5 h-5 cat-arrow text-sage transition-all"></i>
+          </div>
+          <h3 class="font-serif text-xl font-semibold text-forest mb-2">English Learning</h3>
+          <p class="text-warmGray text-sm leading-relaxed mb-4">My journey mastering English through reading, writing, and immersion — not grammar drills. Practical insights for fellow learners.</p>
+          <span class="cat-count text-xs font-medium text-warmLight transition-colors">11 articles</span>
+        </div>
+
+        <!-- Category 3 -->
+        <div class="fade-in fade-in-delay-2 category-card cursor-pointer bg-white border border-beige/60 rounded-sm p-7 md:p-8">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-12 h-12 rounded-sm bg-cream flex items-center justify-center">
+              <i data-lucide="sprout" class="w-5 h-5 cat-icon text-forest transition-colors"></i>
+            </div>
+            <i data-lucide="arrow-up-right" class="w-5 h-5 cat-arrow text-sage transition-all"></i>
+          </div>
+          <h3 class="font-serif text-xl font-semibold text-forest mb-2">Personal Growth</h3>
+          <p class="text-warmGray text-sm leading-relaxed mb-4">Reflections on habits, mindset, and the slow art of becoming. Building a life one intentional day at a time.</p>
+          <span class="cat-count text-xs font-medium text-warmLight transition-colors">13 articles</span>
+        </div>
+
+        <!-- Category 4 -->
+        <div class="fade-in fade-in-delay-3 category-card cursor-pointer bg-white border border-beige/60 rounded-sm p-7 md:p-8">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-12 h-12 rounded-sm bg-cream flex items-center justify-center">
+              <i data-lucide="pen-tool" class="w-5 h-5 cat-icon text-forest transition-colors"></i>
+            </div>
+            <i data-lucide="arrow-up-right" class="w-5 h-5 cat-arrow text-sage transition-all"></i>
+          </div>
+          <h3 class="font-serif text-xl font-semibold text-forest mb-2">Stories & Essays</h3>
+          <p class="text-warmGray text-sm leading-relaxed mb-4">Creative writing, personal narratives, and short essays. The pieces that don't fit categories but need to exist.</p>
+          <span class="cat-count text-xs font-medium text-warmLight transition-colors">9 articles</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-6 md:px-12"><div class="forest-line opacity-20"></div></div>
+
+  <!-- Writing Section -->
+  <section id="writing" class="py-20 md:py-32">
+    <div class="max-w-6xl mx-auto px-6 md:px-12">
+      <div class="fade-in flex items-end justify-between mb-12 md:mb-16">
+        <div>
+          <p class="text-gold font-medium text-xs tracking-[0.2em] uppercase mb-3">Journal</p>
+          <h2 class="font-serif text-3xl md:text-4xl font-semibold text-forest">Latest Articles</h2>
+        </div>
+        <!-- Filter tabs -->
+        <div class="hidden md:flex items-center gap-1 bg-cream rounded-sm p-1">
+          <button class="filter-btn px-4 py-1.5 text-xs font-medium rounded-sm bg-forest text-ivory transition-all" data-filter="all">All</button>
+          <button class="filter-btn px-4 py-1.5 text-xs font-medium rounded-sm text-warmGray hover:text-forest transition-all" data-filter="tech">Tech</button>
+          <button class="filter-btn px-4 py-1.5 text-xs font-medium rounded-sm text-warmGray hover:text-forest transition-all" data-filter="life">Life</button>
+          <button class="filter-btn px-4 py-1.5 text-xs font-medium rounded-sm text-warmGray hover:text-forest transition-all" data-filter="thoughts">Thoughts</button>
+        </div>
+      </div>
+
+      <div id="articlesGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Article 1 -->
+        <article class="fade-in article-card group cursor-pointer bg-white rounded-sm overflow-hidden border border-beige/60" data-category="tech">
+          <div class="aspect-[16/10] overflow-hidden">
+            <img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/1*wJ4aZP4Wtwfdti5PZXULCQ.jpeg  " alt="Terminal" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="filter: saturate(0.75) brightness(0.98);">
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-xs font-medium text-gold tracking-wider uppercase">Programming</span>
+              <span class="text-sage">·</span>
+              <span class="text-xs text-warmLight">Jan 15, 2025</span>
+            </div>
+            <h3 class="font-serif text-lg font-semibold text-forest mb-2 group-hover:text-forestLight transition-colors leading-snug">Why I Stopped Chasing Frameworks</h3>
+            <p class="text-warmGray text-sm leading-relaxed">The liberating realization that fundamentals matter more than the next shiny tool.</p>
+          </div>
+        </article>
+
+        <!-- Article 2 -->
+        <article class="fade-in fade-in-delay-1 article-card group cursor-pointer bg-white rounded-sm overflow-hidden border border-beige/60" data-category="life">
+          <div class="aspect-[16/10] overflow-hidden">
+            <img src="https://www.realsimple.com/thmb/UpsMihs05EZkH-yTGFTOsQzEa_Q=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/morning-routine-GettyImages-1190775022-a16fec85025440ec9d22fcc80e3cf014.jpg" alt="Coffee and notebook" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="filter: saturate(0.8) brightness(1.02);">
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-xs font-medium text-gold tracking-wider uppercase">Growth</span>
+              <span class="text-sage">·</span>
+              <span class="text-xs text-warmLight">Jan 8, 2025</span>
+            </div>
+            <h3 class="font-serif text-lg font-semibold text-forest mb-2 group-hover:text-forestLight transition-colors leading-snug">My Morning Routine: Less Optimization, More Presence</h3>
+            <p class="text-warmGray text-sm leading-relaxed">Dropping the 5 AM club mythology for something that actually works.</p>
+          </div>
+        </article>
+
+        <!-- Article 3 -->
+        <article class="fade-in fade-in-delay-2 article-card group cursor-pointer bg-white rounded-sm overflow-hidden border border-beige/60" data-category="thoughts">
+          <div class="aspect-[16/10] overflow-hidden">
+            <img src="https://picsum.photos/seed/rainy-window/600/375.jpg" alt="Rainy window" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="filter: saturate(0.7) brightness(1.0);">
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-xs font-medium text-gold tracking-wider uppercase">Thoughts</span>
+              <span class="text-sage">·</span>
+              <span class="text-xs text-warmLight">Dec 28, 2024</span>
+            </div>
+            <h3 class="font-serif text-lg font-semibold text-forest mb-2 group-hover:text-forestLight transition-colors leading-snug">The Unproductivity of Rainy Afternoons</h3>
+            <p class="text-warmGray text-sm leading-relaxed">On why the best ideas arrive when you stop trying to have them.</p>
+          </div>
+        </article>
+
+        <!-- Article 4 -->
+        <article class="fade-in article-card group cursor-pointer bg-white rounded-sm overflow-hidden border border-beige/60" data-category="tech">
+          <div class="aspect-[16/10] overflow-hidden">
+            <img src="https://mkg.com.pk/cdn/shop/files/Philosophy_Worldtimes_1.jpg?v=1751098630" alt="CSS code" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="filter: saturate(0.8) brightness(1.02);">
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-xs font-medium text-gold tracking-wider uppercase">Programming</span>
+              <span class="text-sage">·</span>
+              <span class="text-xs text-warmLight">Dec 20, 2024</span>
+            </div>
+            <h3 class="font-serif text-lg font-semibold text-forest mb-2 group-hover:text-forestLight transition-colors leading-snug">CSS as a Design Philosophy</h3>
+            <p class="text-warmGray text-sm leading-relaxed">Treating stylesheets not as styling tools but as design systems in disguise.</p>
+          </div>
+        </article>
+
+        <!-- Article 5 -->
+        <article class="fade-in fade-in-delay-1 article-card group cursor-pointer bg-white rounded-sm overflow-hidden border border-beige/60" data-category="life">
+          <div class="aspect-[16/10] overflow-hidden">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbZwH513kCY0PfIZKE3CkbK3yF5J3MqDBGsA&s" alt="Library" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="filter: saturate(0.78) brightness(1.0);">
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-xs font-medium text-gold tracking-wider uppercase">Learning</span>
+              <span class="text-sage">·</span>
+              <span class="text-xs text-warmLight">Dec 12, 2024</span>
+            </div>
+            <h3 class="font-serif text-lg font-semibold text-forest mb-2 group-hover:text-forestLight transition-colors leading-snug">5 Books That Changed How I Write in English</h3>
+            <p class="text-warmGray text-sm leading-relaxed">From Orwell to Didion — the reading list that transformed my prose.</p>
+          </div>
+        </article>
+
+        <!-- Article 6 -->
+        <article class="fade-in fade-in-delay-2 article-card group cursor-pointer bg-white rounded-sm overflow-hidden border border-beige/60" data-category="thoughts">
+          <div class="aspect-[16/10] overflow-hidden">
+            <img src="https://picsum.photos/seed/starry-night/600/375.jpg" alt="Night sky" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="filter: saturate(0.65) brightness(0.95);">
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-xs font-medium text-gold tracking-wider uppercase">Essay</span>
+              <span class="text-sage">·</span>
+              <span class="text-xs text-warmLight">Dec 5, 2024</span>
+            </div>
+            <h3 class="font-serif text-lg font-semibold text-forest mb-2 group-hover:text-forestLight transition-colors leading-snug">Letters to No One: Writing as Self-Therapy</h3>
+            <p class="text-warmGray text-sm leading-relaxed">How unsent letters became the most honest writing I've ever done.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="fade-in mt-12 text-center">
+        <button id="loadMore" class="inline-flex items-center gap-2 px-8 py-3.5 border border-charcoal/15 text-charcoal text-sm font-medium rounded-sm hover:bg-forest hover:text-ivory hover:border-forest transition-all duration-300">
+          Load More Articles
+          <i data-lucide="chevron-down" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-6 md:px-12"><div class="gold-line opacity-40"></div></div>
+
+  <!-- Skills / Work -->
+  <section id="work" class="py-20 md:py-32">
+    <div class="max-w-6xl mx-auto px-6 md:px-12">
+      <div class="fade-in text-center mb-14 md:mb-18">
+        <p class="text-gold font-medium text-xs tracking-[0.2em] uppercase mb-3">Portfolio</p>
+        <h2 class="font-serif text-3xl md:text-4xl font-semibold text-forest mb-4">Things I've Built</h2>
+        <p class="text-warmGray max-w-lg mx-auto">A selection of projects that reflect how I think about design, code, and problem-solving.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 md:gap-8">
+        <!-- Project 1 -->
+        <div class="fade-in article-card group bg-white rounded-sm overflow-hidden border border-beige/60">
+          <div class="aspect-[16/9] overflow-hidden relative">
+            <img src="https://cdn.prod.website-files.com/61adfe328f98dd7e4d8c45bc/61de2427918b089b5bc1de84_clarity.png" alt="Dashboard project" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="filter: saturate(0.75) brightness(1.0);">
+            <div class="absolute inset-0 bg-forest/0 group-hover:bg-forest/40 transition-colors duration-500 flex items-center justify-center">
+              <span class="text-ivory font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center gap-2">
+                View Project <i data-lucide="external-link" class="w-4 h-4"></i>
+              </span>
+            </div>
+          </div>
+          <div class="p-6 md:p-7">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-xs font-medium text-gold tracking-wider uppercase">Web App</span>
+              <span class="text-sage">·</span>
+              <span class="text-xs text-warmLight">2024</span>
+            </div>
+            <h3 class="font-serif text-xl font-semibold text-forest mb-2">Clarity Dashboard</h3>
+            <p class="text-warmGray text-sm leading-relaxed mb-4">A minimal personal analytics dashboard that tracks what matters — focus time, reading, and writing streaks.</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-2.5 py-1 text-[10px] font-medium tracking-wider uppercase bg-cream text-warmGray rounded-sm">React</span>
+              <span class="px-2.5 py-1 text-[10px] font-medium tracking-wider uppercase bg-cream text-warmGray rounded-sm">Tailwind</span>
+              <span class="px-2.5 py-1 text-[10px] font-medium tracking-wider uppercase bg-cream text-warmGray rounded-sm">Node.js</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="fade-in fade-in-delay-1 article-card group bg-white rounded-sm overflow-hidden border border-beige/60">
+          <div class="aspect-[16/9] overflow-hidden relative">
+            <img src="https://i0.wp.com/inkwellseditor.com/wp-content/uploads/2021/03/laptopwriter.jpg?w=640&ssl=1" alt="Editor project" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="filter: saturate(0.75) brightness(1.0);">
+            <div class="absolute inset-0 bg-forest/0 group-hover:bg-forest/40 transition-colors duration-500 flex items-center justify-center">
+              <span class="text-ivory font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center gap-2">
+                View Project <i data-lucide="external-link" class="w-4 h-4"></i>
+              </span>
+            </div>
+          </div>
+          <div class="p-6 md:p-7">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-xs font-medium text-gold tracking-wider uppercase">Open Source</span>
+              <span class="text-sage">·</span>
+              <span class="text-xs text-warmLight">2024</span>
+            </div>
+            <h3 class="font-serif text-xl font-semibold text-forest mb-2">Inkwell Editor</h3>
+            <p class="text-warmGray text-sm leading-relaxed mb-4">A distraction-free markdown editor designed for long-form writing. Built for writers who think in blocks.</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-2.5 py-1 text-[10px] font-medium tracking-wider uppercase bg-cream text-warmGray rounded-sm">TypeScript</span>
+              <span class="px-2.5 py-1 text-[10px] font-medium tracking-wider uppercase bg-cream text-warmGray rounded-sm">ProseMirror</span>
+              <span class="px-2.5 py-1 text-[10px] font-medium tracking-wider uppercase bg-cream text-warmGray rounded-sm">Markdown</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="fade-in article-card group bg-white rounded-sm overflow-hidden border border-beige/60">
+          <div class="aspect-[16/9] overflow-hidden relative">
+            <img src="https://miro.medium.com/v2/resize:fit:1400/1*ki7c8TNoitiqxhyTLLYVoQ.png" alt="API project" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="filter: saturate(0.75) brightness(1.0);">
+            <div class="absolute inset-0 bg-forest/0 group-hover:bg-forest/40 transition-colors duration-500 flex items-center justify-center">
+              <span class="text-ivory font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center gap-2">
+                View Project <i data-lucide="external-link" class="w-4 h-4"></i>
+              </span>
+            </div>
+          </div>
+          <div class="p-6 md:p-7">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-xs font-medium text-gold tracking-wider uppercase">Backend</span>
+              <span class="text-sage">·</span>
+              <span class="text-xs text-warmLight">2023</span>
+            </div>
+            <h3 class="font-serif text-xl font-semibold text-forest mb-2">RESTful API Starter</h3>
+            <p class="text-warmGray text-sm leading-relaxed mb-4">A clean, opinionated API boilerplate with auth, rate limiting, and structured logging out of the box.</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-2.5 py-1 text-[10px] font-medium tracking-wider uppercase bg-cream text-warmGray rounded-sm">Python</span>
+              <span class="px-2.5 py-1 text-[10px] font-medium tracking-wider uppercase bg-cream text-warmGray rounded-sm">FastAPI</span>
+              <span class="px-2.5 py-1 text-[10px] font-medium tracking-wider uppercase bg-cream text-warmGray rounded-sm">PostgreSQL</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- GitHub Card -->
+        <div class="fade-in fade-in-delay-1 flex flex-col items-center justify-center bg-forest rounded-sm p-8 md:p-12 text-center">
+          <div class="w-14 h-14 rounded-full bg-ivory/10 flex items-center justify-center mb-6">
+            <i data-lucide="github" class="w-7 h-7 text-ivory"></i>
+          </div>
+          <h3 class="font-serif text-xl font-semibold text-ivory mb-3">More on GitHub</h3>
+          <p class="text-ivory/60 text-sm leading-relaxed mb-6 max-w-xs">Explore all my open-source projects, contributions, and experiments in code.</p>
+          <a href="#" class="inline-flex items-center gap-2 px-6 py-3 border border-ivory/30 text-ivory text-sm font-medium rounded-sm hover:bg-ivory/10 transition-colors duration-300">
+            @somueltripura
+            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-6 md:px-12"><div class="forest-line opacity-20"></div></div>
+
+  <!-- Newsletter -->
+  <section class="py-20 md:py-32">
+    <div class="max-w-6xl mx-auto px-6 md:px-12">
+      <div class="fade-in bg-white rounded-sm border border-beige/60 p-8 md:p-16 text-center relative overflow-hidden">
+        <!-- Subtle decoration -->
+        <div class="absolute top-0 right-0 w-64 h-64 opacity-[0.03]" style="background: radial-gradient(circle, #1A3A2A, transparent 70%);"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 opacity-[0.03]" style="background: radial-gradient(circle, #B8963E, transparent 70%);"></div>
+
+        <div class="relative z-10">
+          <div class="w-12 h-12 rounded-full bg-cream flex items-center justify-center mx-auto mb-6">
+            <i data-lucide="mail" class="w-5 h-5 text-forest"></i>
+          </div>
+          <h2 class="font-serif text-3xl md:text-4xl font-semibold text-forest mb-4">A Quiet Letter, Once a Week</h2>
+          <p class="text-warmGray max-w-md mx-auto mb-8 leading-relaxed">
+            No hype, no spam. Just a thoughtful email about something I learned, built, or read — delivered to your inbox every Sunday morning.
+          </p>
+          <form id="newsletterForm" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <input
+              type="email"
+              id="emailInput"
+              placeholder="your@email.com"
+              required
+              class="flex-1 px-5 py-3.5 bg-ivory border border-beige rounded-sm text-sm text-charcoal focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/20 transition-all"
+            >
+            <button type="submit" class="px-7 py-3.5 bg-forest text-ivory text-sm font-medium rounded-sm hover:bg-forestLight transition-colors duration-300 whitespace-nowrap">
+              Subscribe
+            </button>
+          </form>
+          <p class="text-xs text-warmLight mt-4">Join 340+ readers · Unsubscribe anytime</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-6 md:px-12"><div class="gold-line opacity-40"></div></div>
+
+  <!-- Contact -->
+  <section id="contact" class="py-20 md:py-32">
+    <div class="max-w-6xl mx-auto px-6 md:px-12">
+      <div class="grid md:grid-cols-2 gap-12 md:gap-16">
+        <!-- Left -->
+        <div>
+          <div class="fade-in">
+            <p class="text-gold font-medium text-xs tracking-[0.2em] uppercase mb-3">Contact</p>
+            <h2 class="font-serif text-3xl md:text-4xl font-semibold text-forest mb-6">Let's Connect</h2>
+          </div>
+          <p class="fade-in fade-in-delay-1 text-warmGray leading-[1.85] mb-8 max-w-md">
+            Whether it's a collaboration, feedback on my writing, or just a thoughtful conversation — I'm always happy to hear from fellow thinkers and builders.
+          </p>
+
+          <div class="fade-in fade-in-delay-2 space-y-5">
+            <a href="mailto:tripurasomuel65@gmail.com" class="flex items-center gap-4 group">
+              <div class="w-10 h-10 rounded-sm bg-cream flex items-center justify-center group-hover:bg-forest transition-colors duration-300">
+                <i data-lucide="mail" class="w-4 h-4 text-forest group-hover:text-ivory transition-colors duration-300"></i>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-forest group-hover:text-forestLight transition-colors">tripurasomuel65@gmail.com</p>
+                <p class="text-xs text-warmLight">Email</p>
+              </div>
+            </a>
+            <a href="https://x.com/somuetripura24" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 group">
+              <div class="w-10 h-10 rounded-sm bg-cream flex items-center justify-center group-hover:bg-forest transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="text-forest group-hover:text-ivory transition-colors duration-300"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-forest group-hover:text-forestLight transition-colors">@somueltripura24</p>
+                <p class="text-xs text-warmLight">Twitter / X</p>
+              </div>
+            </a>
+            <a href="https://github.com/somueltripura" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 group">
+              <div class="w-10 h-10 rounded-sm bg-cream flex items-center justify-center group-hover:bg-forest transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4 text-forest group-hover:text-ivory transition-colors duration-300" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.084-.729.084-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.834 2.809 1.304 3.495.997.108-.775.418-1.305.762-1.605-2.665-.305-5.466-1.334-5.466-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.553 3.297-1.23 3.297-1.23.653 1.653.242 2.873.119 3.176.77.84 1.235 1.91 1.235 3.221 0 4.609-2.803 5.624-5.475 5.921.43.372.823 1.102.823 2.222v3.293c0 .322.218.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-forest group-hover:text-forestLight transition-colors">somueltripura</p>
+                <p class="text-xs text-warmLight">GitHub</p>
+              </div>
+            </a>
+            <a href="https://www.linkedin.com/in/somuel-tripura/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 group">
+              <div class="w-10 h-10 rounded-sm bg-cream flex items-center justify-center group-hover:bg-forest transition-colors duration-300">
+               <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4 text-forest group-hover:text-ivory transition-colors duration-300" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 11.268h-3v-5.604c0-1.337-.025-3.063-1.868-3.063-1.868 0-2.154 1.459-2.154 2.967v5.7h-3v-10h2.881v1.367h.041c.401-.761 1.379-1.563 2.838-1.563 3.036 0 3.6 2.001 3.6 4.601v5.595z"/></svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-forest group-hover:text-forestLight transition-colors">Somuel Tripura</p>
+                <p class="text-xs text-warmLight">LinkedIn</p>
+              </div>
+            </a>
+            
+          </div>
+        </div>
+
+        <!-- Right - Contact Form -->
+        <div class="fade-in fade-in-delay-2">
+          <form id="contactForm" class="bg-white rounded-sm border border-beige/60 p-6 md:p-8 space-y-5">
+            <div>
+              <label class="block text-xs font-medium text-charcoal mb-2 tracking-wider uppercase">Name</label>
+              <input type="text" required class="w-full px-4 py-3 bg-ivory border border-beige rounded-sm text-sm text-charcoal focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/20 transition-all" placeholder="Your name">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-charcoal mb-2 tracking-wider uppercase">Email</label>
+              <input type="email" required class="w-full px-4 py-3 bg-ivory border border-beige rounded-sm text-sm text-charcoal focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/20 transition-all" placeholder="your@email.com">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-charcoal mb-2 tracking-wider uppercase">Message</label>
+              <textarea required rows="5" class="w-full px-4 py-3 bg-ivory border border-beige rounded-sm text-sm text-charcoal focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/20 transition-all resize-none" placeholder="What's on your mind?"></textarea>
+            </div>
+            <button type="submit" class="w-full px-6 py-3.5 bg-forest text-ivory text-sm font-medium rounded-sm hover:bg-forestLight transition-colors duration-300 flex items-center justify-center gap-2">
+              Send Message
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-beige">
+    <div class="max-w-6xl mx-auto px-6 md:px-12 py-12 md:py-16">
+      <div class="grid md:grid-cols-3 gap-8 md:gap-12 mb-12">
+        <!-- Brand -->
+        <div>
+          <a href="#" class="flex items-center gap-2 mb-4">
+            <span class="font-serif text-xl font-semibold text-forest tracking-tight">Somuel's</span>
+            <span class="font-serif text-xl font-light text-warmGray italic">World</span>
+          </a>
+          <p class="text-warmGray text-sm leading-relaxed max-w-xs">A digital journal about code, language, and living with intention. Written from India, read everywhere.</p>
+        </div>
+        <!-- Quick Links -->
+        <div>
+          <h4 class="text-xs font-medium text-charcoal tracking-wider uppercase mb-4">Navigate</h4>
+          <div class="space-y-2.5">
+            <a href="#writing" class="block text-sm text-warmGray hover:text-forest transition-colors">Writing</a>
+            <a href="#about" class="block text-sm text-warmGray hover:text-forest transition-colors">About</a>
+            <a href="#categories" class="block text-sm text-warmGray hover:text-forest transition-colors">Topics</a>
+            <a href="#work" class="block text-sm text-warmGray hover:text-forest transition-colors">Work</a>
+            <a href="#contact" class="block text-sm text-warmGray hover:text-forest transition-colors">Contact</a>
+          </div>
+        </div>
+        <!-- Elsewhere -->
+        <div>
+          <h4 class="text-xs font-medium text-charcoal tracking-wider uppercase mb-4">Elsewhere</h4>
+          <div class="space-y-2.5">
+            <a href="#" class="block text-sm text-warmGray hover:text-forest transition-colors">GitHub</a>
+            <a href="#" class="block text-sm text-warmGray hover:text-forest transition-colors">Twitter / X</a>
+            <a href="#" class="block text-sm text-warmGray hover:text-forest transition-colors">LinkedIn</a>
+            <a href="#" class="block text-sm text-warmGray hover:text-forest transition-colors">RSS Feed</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="gold-line opacity-30 mb-8"></div>
+
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-xs text-warmLight">© 2026 Somuel's World. All rights reserved.</p>
+        <p class="text-xs text-warmLight italic font-serif">"Design should feel like reading a quiet book in a peaceful afternoon."</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button id="backToTop" class="fixed bottom-8 left-8 w-10 h-10 bg-forest text-ivory rounded-sm flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 hover:bg-forestLight shadow-lg shadow-forest/10 z-50" aria-label="Back to top">
+    <i data-lucide="chevron-up" class="w-4 h-4"></i>
+  </button>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Toast function
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    let menuOpen = false;
+
+    menuBtn.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.classList.toggle('open', menuOpen);
+    });
+
+    // Close mobile menu on link click
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        menuOpen = false;
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // Navbar shadow on scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 20) {
+        navbar.style.boxShadow = '0 1px 20px rgba(26,58,42,0.06)';
+      } else {
+        navbar.style.boxShadow = 'none';
+      }
+    });
+
+    // Back to top button
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 600) {
+        backToTop.style.opacity = '1';
+        backToTop.style.pointerEvents = 'auto';
+      } else {
+        backToTop.style.opacity = '0';
+        backToTop.style.pointerEvents = 'none';
+      }
+    });
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Intersection Observer for fade-in animations
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px 0px -60px 0px',
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in, .line-expand').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Article filter
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const articles = document.querySelectorAll('#articlesGrid article');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update active state
+        filterBtns.forEach(b => {
+          b.classList.remove('bg-forest', 'text-ivory');
+          b.classList.add('text-warmGray');
+        });
+        btn.classList.add('bg-forest', 'text-ivory');
+        btn.classList.remove('text-warmGray');
+
+        const filter = btn.dataset.filter;
+
+        articles.forEach(article => {
+          if (filter === 'all' || article.dataset.category === filter) {
+            article.style.display = '';
+            article.style.opacity = '0';
+            article.style.transform = 'translateY(16px)';
+            requestAnimationFrame(() => {
+              article.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+              article.style.opacity = '1';
+              article.style.transform = 'translateY(0)';
+            });
+          } else {
+            article.style.opacity = '0';
+            article.style.transform = 'translateY(16px)';
+            setTimeout(() => { article.style.display = 'none'; }, 300);
+          }
+        });
+      });
+    });
+
+    // Newsletter form
+    document.getElementById('newsletterForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('emailInput').value;
+      if (email) {
+        showToast('✓ Welcome aboard! Check your inbox for a confirmation.');
+        document.getElementById('emailInput').value = '';
+      }
+    });
+
+    // Contact form
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      showToast('✓ Message sent! I\'ll get back to you soon.');
+      e.target.reset();
+    });
+
+    // Load more button
+    document.getElementById('loadMore').addEventListener('click', function() {
+      this.innerHTML = '<span class="flex items-center gap-2"><svg class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" opacity="0.25"/><path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="currentColor" opacity="0.75"/></svg> Loading...</span>';
+      setTimeout(() => {
+        this.innerHTML = 'No more articles <i data-lucide="check" class="w-4 h-4"></i>';
+        this.disabled = true;
+        this.classList.add('opacity-50', 'cursor-not-allowed');
+        lucide.createIcons();
+      }, 1500);
+    });
+  </script>
+
+</body>
+</html>

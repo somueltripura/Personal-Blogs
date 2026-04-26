@@ -1,0 +1,27 @@
+# 1. Create project directory
+mkdir backend && cd backend
+
+# 2. Save all files in the structure shown above
+#    (copy each file to its path)
+
+# 3. Create required directories
+mkdir -p data uploads/articles uploads/projects uploads/avatars public database
+
+# 4. Create empty gitkeep for uploads
+touch uploads/.gitkeep
+
+# 5. Install dependencies
+npm install
+
+# 6. Create environment file
+cp .env.example .env
+# Then edit .env with your real JWT_SECRET and admin password!
+
+# 7. Initialize database with seed data
+npm run seed
+
+# 8. Start the server
+npm start
+#   → API:     http://localhost:3001
+#   → Admin:   http://localhost:3001/admin
+#   → Health:  http://localhost:3001/api/health
